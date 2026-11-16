@@ -1,0 +1,25 @@
+name: Publish CacheAside
+
+on:
+  push:
+    branches: [ "main" ]
+    paths:
+      - "src/CacheAside/**"
+      - "Directory.Build.props"
+      - "Directory.Packages.props"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    uses: ./.github/workflows/pr-checker.yml
+
+  publish-nuget:
+    needs: [test]
+    uses: ./.github/workflows/publish-nuget.yml
+    with:
+      project_path: "src/CacheAside/CacheAside.csproj"
+    secrets:
+      NUGET_API_KEY: ${{ secrets.NUGET_API_KEY }}

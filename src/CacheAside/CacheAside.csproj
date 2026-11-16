@@ -1,0 +1,40 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFrameworks>net8.0;net10.0</TargetFrameworks>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+  </PropertyGroup>
+
+  <PropertyGroup Label="Package">
+    <IsPackable>true</IsPackable>
+    <PackageId>CacheAside</PackageId>
+    <Version>1.0.0</Version>
+    <Authors>Emmanuel Ajibodu</Authors>
+    <Copyright>Copyright (c) Emmanuel Ajibodu</Copyright>
+    <Description>Attribute-driven cache-aside for .NET. Put [Cacheable] and [CacheEvict] on interface methods and plug in the cache you already use (IMemoryCache, IDistributedCache, Redis, HybridCache) with a few delegates.</Description>
+    <PackageTags>cache;caching;cache-aside;attributes;interceptor;redis;hybridcache;distributed-cache</PackageTags>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
+    <PackageProjectUrl>https://github.com/ajibodu/cache-aside</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/ajibodu/cache-aside</RepositoryUrl>
+    <RepositoryType>git</RepositoryType>
+    <PublishRepositoryUrl>true</PublishRepositoryUrl>
+    <EmbedUntrackedSources>true</EmbedUntrackedSources>
+    <IncludeSymbols>true</IncludeSymbols>
+    <SymbolPackageFormat>snupkg</SymbolPackageFormat>
+    <EnablePackageValidation>true</EnablePackageValidation>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Include="..\..\README.md" Pack="true" PackagePath="\" Visible="false" />
+    <InternalsVisibleTo Include="CacheAside.Test" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Castle.Core" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" />
+    <PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" />
+  </ItemGroup>
+
+</Project>

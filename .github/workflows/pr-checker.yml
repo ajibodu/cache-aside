@@ -1,0 +1,59 @@
+name: PR Checker
+
+on:
+  pull_request:
+    branches: [ "main" ]
+  workflow_dispatch:
+  workflow_call: # the publish workflow runs this first
+
+permissions:
+  contents: read
+
+env:
+  DOTNET_NOLOGO: true
+  SOLUTION: src/CacheAside.sln
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+
+    services:
+      redis:
+        image: redis:7-alpine
+        ports:
+          - 6379:6379
+        options: >-
+          --health-cmd "redis-cli ping"
+          --health-interval 5s
+          --health-timeout 3s
+          --health-retries 10
+
+    env:
+      CACHEASIDE_TEST_REDIS: localhost:6379
+      CACHEASIDE_REQUIRE_REDIS: "true" # fail instead of skipping the Redis tests
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Setup .NET SDK
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: |
+            8.0.x
+            10.0.x
+
+      - name: Restore
+        run: dotnet restore ${{ env.SOLUTION }}
+
+      - name: Build
+        run: dotnet build ${{ env.SOLUTION }} -c Release --no-restore
+
+      - name: Unit Tests
+        run: dotnet test test/CacheAside.Test -c Release --no-build
+
+      - name: Integration Tests
+        run: dotnet test test/CacheAside.IntegrationTest -c Release --no-build
+
+      - name: Pack
+        run: dotnet pack src/CacheAside/CacheAside.csproj -c Release --no-build -o artifacts
