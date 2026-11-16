@@ -1,0 +1,14 @@
+@host = http://localhost:5080
+
+### First call is slow (miss), repeat it and it's instant (hit)
+GET {{host}}/products/1
+
+### Update evicts product:1, so the next GET reloads it
+PUT {{host}}/products/1
+Content-Type: application/json
+
+{ "name": "Mechanical keyboard", "price": 89.99 }
+
+### Cached per user: try X-User alice and bob
+GET {{host}}/me/favourites
+X-User: alice
