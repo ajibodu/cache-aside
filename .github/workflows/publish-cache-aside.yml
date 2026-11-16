@@ -19,7 +19,9 @@ jobs:
   publish-nuget:
     needs: [test]
     uses: ./.github/workflows/publish-nuget.yml
+    permissions:
+      contents: read
+      id-token: write # the called workflow can only get permissions the caller grants
     with:
       project_path: "src/CacheAside/CacheAside.csproj"
-    secrets:
-      NUGET_API_KEY: ${{ secrets.NUGET_API_KEY }}
+      nuget_user: "AjiboduEmmanuel"

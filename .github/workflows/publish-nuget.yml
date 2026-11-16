@@ -14,9 +14,10 @@ on:
           8.0.x
           10.0.x
         description: '.NET SDK version(s)'
-    secrets:
-      NUGET_API_KEY:
+      nuget_user:
         required: true
+        type: string
+        description: 'nuget.org profile name (not email) that owns the Trusted Publishing policy'
 
 permissions:
   contents: read
@@ -53,6 +54,8 @@ jobs:
   publish:
     needs: [pack]
     runs-on: ubuntu-latest
+    permissions:
+      id-token: write # request the GitHub OIDC token that NuGet/login exchanges for a temporary API key
     steps:
       - name: Download Artifact
         uses: actions/download-artifact@v4
@@ -65,10 +68,17 @@ jobs:
         with:
           dotnet-version: 10.0.x
 
+      # Trusted Publishing: trades the OIDC token for a short-lived (~1h) API key. No stored secret needed.
+      - name: NuGet login
+        id: login
+        uses: NuGet/login@v1
+        with:
+          user: ${{ inputs.nuget_user }}
+
       # Pushes the .snupkg alongside. --skip-duplicate makes a merge without a version bump a no-op instead of a failure.
       - name: Push to NuGet
         run: >-
           dotnet nuget push "${{ env.NuGetDirectory }}/*.nupkg"
-          --api-key "${{ secrets.NUGET_API_KEY }}"
+          --api-key "${{ steps.login.outputs.NUGET_API_KEY }}"
           --source https://api.nuget.org/v3/index.json
           --skip-duplicate
